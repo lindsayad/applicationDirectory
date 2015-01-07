@@ -1,1 +1,1 @@
-Application files for my attempts to model streamer discharges using OpenFoam. If you use the files contained here, I politely request that you cite Alex Lindsay and Steven Shannon of North Carolina State University and David Graves of UC-Berkeley.
+Application files for my attempts to model streamer discharges using OpenFoam. If you use the files contained here, I politely request that you cite Alex Lindsay and Steven Shannon of North Carolina State University, David Graves of UC-Berkeley, and the developers at OpenFoam (http://www.openfoam.org/).
