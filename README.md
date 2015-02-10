@@ -1,1 +1,2 @@
-Application files for my attempts to model streamer discharges using OpenFoam. If you use the files contained here, I politely request that you cite Alex Lindsay and Steven Shannon of North Carolina State University, David Graves of UC-Berkeley, and the developers at OpenFoam (http://www.openfoam.org/).
+Repository for development of OpenFOAM applications relevant to modelling streamer
+discharges, and ultimately streamer discharges interacting with liquid water.
