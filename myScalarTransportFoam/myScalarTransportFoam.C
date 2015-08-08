@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -22,56 +22,52 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Application
-    electrostaticFoam
+    scalarTransportFoam
 
 Description
-    Solver for electrostatics.
+    Solves a transport equation for a passive scalar
 
 \*---------------------------------------------------------------------------*/
 
 #include "fvCFD.H"
+#include "fvIOoptionList.H"
+#include "simpleControl.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 int main(int argc, char *argv[])
 {
     #include "setRootCase.H"
-
     #include "createTime.H"
     #include "createMesh.H"
     #include "createFields.H"
+    #include "createFvOptions.H"
+
+    simpleControl simple(mesh);
 
     // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-    Info<< "\nStarting iteration loop\n" << endl;
+    Info<< "\nCalculating scalar transport\n" << endl;
 
-    while (runTime.loop())
+    #include "CourantNo.H"
+
+    while (simple.loop())
     {
-        Info<< "Iteration = " << runTime.timeName() << nl << endl;
+        Info<< "Time = " << runTime.timeName() << nl << endl;
 
-        solve
-        (
-	  fvm::laplacian(phi) //+ coulomb_charge*(exp(ip)-exp(em))/epsilon0
-        );
-
-	EField = -1.*fvc::grad(phi);
-        ipFlux = -muip*mesh.magSf()*fvc::snGrad(phi);
-        emFlux = muem*mesh.magSf()*fvc::snGrad(phi);
-
-        solve
-        (
-            fvm::ddt(ip) + fvm::div(ipFlux, ip)
-        );
-        solve
-        (
-            fvm::ddt(em) + fvm::div(emFlux, em)
-        );
+        while (simple.correctNonOrthogonal())
+        {
+            solve
+            (
+                fvm::ddt(T)
+              + fvm::div(phi, T)
+              - fvm::laplacian(DT, T)
+             ==
+                fvOptions(T)
+            );
+        }
 
         runTime.write();
-
-        Info<< "ExecutionTime = " << runTime.elapsedCpuTime() << " s"
-            << "  ClockTime = " << runTime.elapsedClockTime() << " s"
-            << nl << endl;
     }
 
     Info<< "End\n" << endl;

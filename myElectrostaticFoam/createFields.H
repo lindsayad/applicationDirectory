@@ -17,11 +17,15 @@
         physicalProperties.lookup("epsilon0")
     );
 
-    dimensionedScalar k
+    dimensionedScalar muip
     (
-        physicalProperties.lookup("k")
+        physicalProperties.lookup("muip")
     );
 
+    dimensionedScalar muem
+    (
+        physicalProperties.lookup("muem")
+    );
 
     Info<< "Reading field phi\n" << endl;
     volScalarField phi
@@ -52,12 +56,26 @@
 	);		
 
 
-    Info<< "Reading field rho\n" << endl;
-    volScalarField rho
+    Info<< "Reading field ip\n" << endl;
+    volScalarField ip
     (
         IOobject
         (
-            "rho",
+            "ip",
+            runTime.timeName(),
+            mesh,
+            IOobject::MUST_READ,
+            IOobject::AUTO_WRITE
+        ),
+        mesh
+    );
+
+    Info<< "Reading field em\n" << endl;
+    volScalarField em
+    (
+        IOobject
+        (
+            "em",
             runTime.timeName(),
             mesh,
             IOobject::MUST_READ,
@@ -67,16 +85,30 @@
     );
 
 
-    Info<< "Calculating field rhoFlux\n" << endl;
-    surfaceScalarField rhoFlux
+    Info<< "Calculating field ipFlux\n" << endl;
+    surfaceScalarField ipFlux
     (
         IOobject
         (
-            "rhoFlux",
+            "ipFlux",
             runTime.timeName(),
             mesh,
             IOobject::NO_READ,
             IOobject::NO_WRITE
         ),
-        -k*mesh.magSf()*fvc::snGrad(phi)
+        -muip*mesh.magSf()*fvc::snGrad(phi)
+    );
+
+    Info<< "Calculating field emFlux\n" << endl;
+    surfaceScalarField emFlux
+    (
+        IOobject
+        (
+            "emFlux",
+            runTime.timeName(),
+            mesh,
+            IOobject::NO_READ,
+            IOobject::NO_WRITE
+        ),
+        muem*mesh.magSf()*fvc::snGrad(phi)
     );

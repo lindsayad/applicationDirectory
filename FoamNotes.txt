@@ -1,0 +1,1 @@
+The fact that createPhi.H is in the incompressible directory is kind of telling, isn't it? It would suggest to me that the velocity field creating the advective flux is assumed to be divergence free.
